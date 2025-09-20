@@ -428,7 +428,7 @@ If you encounter any issues or have questions:
 
 **Project Maintainer**: [Blitz2001](https://github.com/Blitz2001)
 
-**Email**: [Your Email]
+**Email**: asbthanayamwatta2@gmail.com
 
 **Project Link**: [https://github.com/Blitz2001/SerendibGo---Your-unified-travel-platform-for-exploring-the-beautiful-island-of-Sri-Lanka.](https://github.com/Blitz2001/SerendibGo---Your-unified-travel-platform-for-exploring-the-beautiful-island-of-Sri-Lanka.)
 
