@@ -1,0 +1,42 @@
+{
+  "name": "serendibgo",
+  "version": "1.0.0",
+  "description": "Unified travel platform for Sri Lanka - connecting travelers with hotels, vehicles, guides, and tour packages",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "build:prod": "cd client && npm run build && cd ../server && npm install --production",
+    "start": "cd server && npm start",
+    "start:prod": "NODE_ENV=production cd server && npm start",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "test": "cd server && npm test && cd ../client && npm test",
+    "lint": "cd client && npm run lint",
+    "lint:fix": "cd client && npm run lint -- --fix"
+  },
+  "keywords": [
+    "travel",
+    "sri-lanka",
+    "tourism",
+    "booking",
+    "mern-stack",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "SerendibGo Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "mongodb": "^6.18.0",
+    "stripe": "^18.5.0"
+  }
+}
