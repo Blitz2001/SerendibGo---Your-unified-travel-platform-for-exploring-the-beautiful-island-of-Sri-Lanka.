@@ -1,4 +1,16 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+/**
+ * Lazy initialize Stripe client so we can show a clearer error when the
+ * environment variable is missing instead of letting the Stripe library
+ * throw an opaque error at module import time.
+ */
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Missing STRIPE_SECRET_KEY environment variable.\nPlease set STRIPE_SECRET_KEY in env.local (project root) or your environment.');
+  }
+  // require here to avoid initializing stripe during module import when key is missing
+  // eslint-disable-next-line global-require
+  return require('stripe')(process.env.STRIPE_SECRET_KEY);
+}
 
 class StripeService {
   /**
@@ -18,7 +30,7 @@ class StripeService {
       // Convert LKR to cents (Stripe expects amounts in smallest currency unit)
       const amountInCents = Math.round(amount * 100);
 
-      const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripe().paymentIntents.create({
         amount: amountInCents,
         currency: currency.toLowerCase(),
         metadata: {
@@ -59,7 +71,7 @@ class StripeService {
    */
   static async confirmPaymentIntent(paymentIntentId) {
     try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
       if (paymentIntent.status === 'succeeded') {
         return {
@@ -76,7 +88,7 @@ class StripeService {
           error: 'Payment method required'
         };
       } else if (paymentIntent.status === 'requires_confirmation') {
-        const confirmedPayment = await stripe.paymentIntents.confirm(paymentIntentId);
+  const confirmedPayment = await getStripe().paymentIntents.confirm(paymentIntentId);
         return {
           success: confirmedPayment.status === 'succeeded',
           status: confirmedPayment.status,
@@ -109,7 +121,7 @@ class StripeService {
    */
   static async getPaymentIntent(paymentIntentId) {
     try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
       
       return {
         success: true,
@@ -140,7 +152,7 @@ class StripeService {
    */
   static async cancelPaymentIntent(paymentIntentId) {
     try {
-      const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.cancel(paymentIntentId);
       
       return {
         success: true,
@@ -182,7 +194,7 @@ class StripeService {
         stripeRefundData.reason = reason;
       }
 
-      const refund = await stripe.refunds.create(stripeRefundData);
+  const refund = await getStripe().refunds.create(stripeRefundData);
       
       return {
         success: true,

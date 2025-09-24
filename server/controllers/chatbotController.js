@@ -1,8 +1,18 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Initialize Gemini AI
+// Helper: lazily initialize the Gemini AI client so missing/invalid keys
+// produce a clear response instead of an unhandled 500.
+function getGenAI() {
+  if (!process.env.GEMINI_API_KEY) return null;
+  try {
+    return new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  } catch (err) {
+    console.error('Failed to initialize GoogleGenerativeAI:', err && err.message ? err.message : err);
+    return null;
+  }
+}
+
 console.log('Gemini API Key loaded:', process.env.GEMINI_API_KEY ? 'Yes' : 'No');
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Chat with AI chatbot
 const chatWithBot = async (req, res) => {
@@ -13,6 +23,16 @@ const chatWithBot = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Message is required'
+      });
+    }
+
+    // Initialize the generative AI client for each request to handle missing/invalid keys
+    const genAI = getGenAI();
+    if (!genAI) {
+      // Clear error to the client when the AI key isn't configured
+      return res.status(503).json({
+        success: false,
+        message: 'AI service not configured. Please set GEMINI_API_KEY in the server environment.'
       });
     }
 
